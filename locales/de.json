@@ -1,0 +1,128 @@
+{
+  "tabs": {
+    "homepage": "Startseite",
+    "profile": "Profil",
+    "search": "Suchergebnis"
+  },
+  "home": {
+    "author_by": "Von",
+    "published": "Veröffentlicht",
+    "popular": "Aktuell beliebt",
+    "recommended": "Für dich empfohlen",
+    "my_novels": "Meine Romane",
+    "news": "Neuigkeiten",
+    "search_result": "Suchergebnis",
+    "watch_now": "Jetzt ansehen",
+    "welcome": "Willkommen!",
+    "full_access_features": "Willkommen in WalkingWords! Du hast nun vollen Zugriff auf alle Funktionen innerhalb der App."
+  },
+  "action": {
+    "read_now": "Jetzt Lesen",
+    "save": "Speichern",
+    "save_bookmark_as": "Bookmark speichern als...",
+    "location": "Standort",
+    "text": "Text",
+    "audio": "Audio",
+    "skip": "Überspringen",
+    "get_started": "Loslegen",
+    "logout": "Ausloggen"
+  },
+  "details": {
+    "chapter": "Kapitel",
+    "page": "{{value}} Seiten",
+    "listening_time": "Hördauer",
+    "character": "Charaktere",
+    "author_by": "Von",
+    "genre": "Genre"
+  },
+  "book_reader": {
+    "listen_chapter": "Kapitel anhören",
+    "chapter_listening": "Kapitel wird angehört",
+    "bright": "Hell",
+    "dark": "Dunkel",
+    "pageOf": "Seite {{currentPage}} von {{totalPage}}",
+    "percentage_book_listened": "{{value}}% des Buches gehört"
+  },
+  "search": {
+    "title": "Suchergebnis",
+    "placeholder": "Suchergebnis ..."
+  },
+  "story_overview": {
+    "where_am_i": "Wo bin ich?",
+    "view_more": "Mehr lesen",
+    "view_less": "Weniger lesen",
+    "view_map": "Karte ansehen",
+    "age": "Jahre alt",
+    "siblings": "Geschwister"
+  },
+  "map": {
+    "visit_location": "Ort besuchen"
+  },
+  "login": {
+    "title": "Melde dich jetzt an",
+    "description": "Und erlebe die Wunder unserer Bücher",
+    "forgot_password": "Passwort vergessen?",
+    "login": "Anmelden",
+    "no_account": "Noch kein Account?"
+  },
+  "register": {
+    "title": "Registrieren",
+    "description": "Lege hier eine E-Mail, sowie ein Passwort für deinen neuen Account an.",
+    "register": "Weiter",
+    "introduce": "Durch das Fortfahren stimmst du unseren AGB’s und Datenschutzrichtlinien zu."
+  },
+  "forgot_password": {
+    "title": "E-Mail eingeben",
+    "description": "Gib hier deine E-Mail-Adresse ein, um dein Passwort zurückzusetzen.",
+    "check_email_title": "Überprüfe deine E-Mails",
+    "check_email_description": "Aktualisiere dein Passwort durch einen Klick auf den Link. Prüfe ggf. deinen Spamordner.",
+    "check_email_subDescription": "🔒 Diese E-Mail sollte vertraulich behandelt werden"
+  },
+  "change_password": {
+    "title": "Passwort ändern",
+    "description": "Lege hier eine E-Mail, sowie ein Passwort für deinen neuen Account an."
+  },
+  "recover_password": {
+    "title": "Passwort aktualisieren",
+    "description": "Gib hier dein neues Passwort ein und bestätige es."
+  },
+  "form": {
+    "name": "Name",
+    "first_name": "Vorname",
+    "last_name": "Nachname",
+    "email": "E-Mail",
+    "current_email": "Aktuelles E-mail",
+    "new_email": "Neues E-mail",
+    "password": "Passwort",
+    "current_password": "Aktuelles Passwort",
+    "new_password": "Neues Passwort",
+    "enter_name": "Dein Name",
+    "empty_name": "Please enter your name",
+    "enter_email": "Deine E-Mail",
+    "empty_email": "Please enter your email",
+    "not exist_email": "Diese E-Mail existiert nicht",
+    "invalid_email": "Invalid email",
+    "enter_password": "Dein Passwort",
+    "empty_password": "Please enter your password",
+    "enter_confirm_password": "Passwort bestätigen",
+    "empty_confirm_password": "Please enter your confirm password",
+    "password_not_match": "Password do not match"
+  },
+  "profile": {
+    "title": "Dein Profil",
+    "next": "Weiter",
+    "update_name": "Name ändern",
+    "update_name_description": "Trage hier deinen neuen Namen ein.",
+    "name_updated": "Name geändert!",
+    "name_updated_description": "Dein Name wurde erfolgreich geändert.",
+    "update_email": "E-Mail ändern",
+    "update_email_description": "Trage hier deine neue E-Mail ein.",
+    "email_updated": "E-Mail geändert!",
+    "email_updated_description": "Deine E-Mail wurde erfolgreich geändert.",
+    "update_password": "Passwort ändern",
+    "update_password_description": "Lege hier eine E-Mail, sowie ein Passwort für deinen neuen Account an.",
+    "password_updated": "Passwort geändert!",
+    "password_updated_description": "Dein Passwort wurde erfolgreich geändert.",
+    "password_recovered_description": "Dein Passwort wurde erfolgreich aktualisiert."
+  }
+}

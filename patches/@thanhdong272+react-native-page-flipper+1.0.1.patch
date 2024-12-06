@@ -1,0 +1,133 @@
+diff --git a/node_modules/@thanhdong272/react-native-page-flipper/src/index.tsx b/node_modules/@thanhdong272/react-native-page-flipper/src/index.tsx
+index 733526f..a483f3c 100644
+--- a/node_modules/@thanhdong272/react-native-page-flipper/src/index.tsx
++++ b/node_modules/@thanhdong272/react-native-page-flipper/src/index.tsx
+@@ -53,7 +53,6 @@ export type State = {
+   pages: Page[];
+   isAnimating: boolean;
+   initialized: boolean;
+-  // pageSize: Size;
+   prev: Page;
+   current: Page;
+   next: Page;
+@@ -87,7 +86,6 @@ const PageFlipper = React.forwardRef<PageFlipperInstance, IPageFlipperProps>(
+       onInitialized,
+       renderContainer,
+       renderPage,
+-      pageSize = { height: 600, width: 400 },
+       contentContainerStyle,
+       pageContainerStyle,
+     },
+@@ -102,7 +100,6 @@ const PageFlipper = React.forwardRef<PageFlipperInstance, IPageFlipperProps>(
+       pages: [],
+       isAnimating: false,
+       initialized: false,
+-      // pageSize: { width: 0, height: 0 },
+       prev: { left: '', right: '' },
+       current: { left: '', right: '' },
+       next: { left: '', right: '' },
+@@ -115,65 +112,8 @@ const PageFlipper = React.forwardRef<PageFlipperInstance, IPageFlipperProps>(
+     const portraitBookPage = useRef<PortraitBookInstance>(null);
+     const previousPortrait = usePrevious(portrait);
+     const containerSize = useMemo(() => {
+-      if (!state.initialized) {
+-        return {
+-          width: 0,
+-          height: 0,
+-        };
+-      }
+-      let size = {
+-        height: pageSize.height,
+-        width:
+-          singleImageMode && !state.isPortrait
+-            ? pageSize.width * 2
+-            : pageSize.width,
+-      };
+-
+-      if (!singleImageMode && state.isPortrait) {
+-        size = {
+-          height: pageSize.height,
+-          width: pageSize.width / 2,
+-        };
+-      }
+-
+-      let finalSize: Size;
+-
+-      // corrections
+-      if (size.height > size.width) {
+-        const ratio = size.height / size.width;
+-        finalSize = {
+-          height: width * ratio,
+-          width,
+-        };
+-
+-        if (finalSize.height > height) {
+-          const diff = finalSize.height / height;
+-          finalSize.height = height;
+-          finalSize.width = finalSize.width / diff;
+-        }
+-      } else {
+-        const ratio = size.width / size.height;
+-        finalSize = {
+-          height,
+-          width: height * ratio,
+-        };
+-        if (finalSize.width > width) {
+-          const diff = finalSize.width / width;
+-          finalSize.width = width;
+-          finalSize.height = finalSize.height / diff;
+-        }
+-      }
+-
+-      return finalSize;
+-    }, [
+-      height,
+-      singleImageMode,
+-      width,
+-      state.initialized,
+-      state.isPortrait,
+-      pageSize.height,
+-      pageSize.width,
+-    ]);
++      return { width: width, height: height };
++    }, [height, width]);
+ 
+     useEffect(() => {
+       const initialize = async () => {
+@@ -504,18 +444,24 @@ const PageFlipper = React.forwardRef<PageFlipperInstance, IPageFlipperProps>(
+                     pageContainerStyle={pageContainerStyle}
+                   />
+                 )}
+-                <BookPageBackground
+-                  left={!prev ? current.left : prev.left}
+-                  right={!next ? current.right : next.right}
+-                  isFirstPage={isFirstPage}
+-                  isLastPage={isLastPage}
+-                  getPageStyle={getPageStyle}
+-                  containerSize={containerSize}
+-                  renderPage={renderPage}
+-                  renderLastPage={renderLastPage}
+-                  shouldRenderLastPage={shouldRenderLastPage}
+-                  pageContainerStyle={pageContainerStyle}
+-                />
++                {data?.length > 0 && (
++                  <BookPageBackground
++                    left={
++                      !prev ? current && current.left : current && prev.left
++                    }
++                    right={
++                      !next ? current && current.right : current && next.right
++                    }
++                    isFirstPage={isFirstPage}
++                    isLastPage={isLastPage}
++                    getPageStyle={getPageStyle}
++                    containerSize={containerSize}
++                    renderPage={renderPage}
++                    renderLastPage={renderLastPage}
++                    shouldRenderLastPage={shouldRenderLastPage}
++                    pageContainerStyle={pageContainerStyle}
++                  />
++                )}
+               </View>
+             ) : (
+               <View style={styles.portraitContent}>

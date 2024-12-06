@@ -1,0 +1,1822 @@
+openapi: 3.1.0
+info:
+  title: "Walking Words API Documentation"
+  description: "API Documentation"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+  version: 1.0.0
+servers:
+  - url: "http://walkingwords.nxtyou.dev/api"
+    description: "Wilmering API Server"
+paths:
+  /books/popular:
+    get:
+      tags:
+        - Books
+      summary: "Get popular books"
+      description: "Fetch the most bookmarked books in the last month."
+      operationId: getPopularBooks
+      parameters:
+        - name: page
+          in: query
+          description: "The page number to retrieve"
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: perPage
+          in: query
+          description: "The number of items per page"
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        200:
+          description: "Books Fetch Successfully!"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Books Fetch Successfully!"
+                  data:
+                    $ref: "#/components/schemas/Book"
+                type: object
+  /books/recommended:
+    get:
+      tags:
+        - Books
+      description: "Fetch recommended books ordered by their creation date."
+      operationId: getRecommendedBooks
+      parameters:
+        - name: page
+          in: query
+          description: "The page number to retrieve"
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: perPage
+          in: query
+          description: "The number of items per page"
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        200:
+          description: "Recommended books fetched successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Books Fetch Successfully!"
+                  data:
+                    $ref: "#/components/schemas/Book"
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /books/my-novels:
+    get:
+      tags:
+        - Books
+      summary: "Get user's bookmarked novels"
+      description: "Fetch the list of novels bookmarked by the authenticated user."
+      operationId: getMyNovels
+      parameters:
+        - name: page
+          in: query
+          description: "The page number to retrieve"
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: perPage
+          in: query
+          description: "The number of items per page"
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        200:
+          description: "User's bookmarked novels fetched successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Books Fetch Successfully!"
+                  data:
+                    $ref: "#/components/schemas/Book"
+                type: object
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /books/details/{bookUUID}:
+    get:
+      tags:
+        - Books
+      summary: "Get book details by bookUUID"
+      description: "Fetch single book details by bookUUID."
+      operationId: getBookDetails
+      parameters:
+        - name: bookUUID
+          in: path
+          description: "The book UUID to retrieve"
+          required: true
+          schema:
+            type: string
+            example: 6ff601e2-8267-4644-a780-87ac65ec4998
+      responses:
+        200:
+          description: "Books found"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                  - data
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Books found!"
+                  data:
+                    $ref: "#/components/schemas/BookItem"
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /books/{bookUuid}/bookmark:
+    post:
+      tags:
+        - Books
+      summary: "Bookmark or unbookmark a book"
+      description: "Bookmark a book or remove the bookmark if it already exists for the authenticated user."
+      operationId: bookmarkBook
+      parameters:
+        - name: bookUuid
+          in: path
+          description: "The UUID of the book to bookmark or unbookmark"
+          required: true
+          schema:
+            type: string
+            example: 1ee3e6c8-5d12-448d-8d6e-bc0cb639c038
+      responses:
+        200:
+          description: "Book bookmarked or unbookmarked successfully"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Book bookmarked successfully"
+                type: object
+        401:
+          $ref: "#/components/responses/Unauthenticated"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: "User login"
+      description: "Authenticate a user and return an access token."
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: your_password
+              type: object
+      responses:
+        200:
+          description: "Successful login"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Login successful"
+                  data:
+                    required:
+                      - accessToken
+                      - tokenType
+                      - expiresAt
+                    properties:
+                      accessToken:
+                        type: string
+                        example: your_access_token
+                      tokenType:
+                        type: string
+                        example: Bearer
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        example: "2024-10-26T00:00:00Z"
+                    type: object
+                type: object
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - status_code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  status_code:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: "These credentials do not match match our records."
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /register:
+    post:
+      tags:
+        - Authentication
+      summary: "User registration"
+      description: "Register a new user and return an access token."
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+                - passwordConfirmation
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: your_password
+                passwordConfirmation:
+                  type: string
+                  format: password
+                  example: retype_password
+              type: object
+      responses:
+        201:
+          description: "You have been registered."
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                  - data
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "You have been registered."
+                  data:
+                    required:
+                      - accessToken
+                      - tokenType
+                      - expiresAt
+                    properties:
+                      accessToken:
+                        type: string
+                        example: your_access_token
+                      tokenType:
+                        type: string
+                        example: Bearer
+                      expiresAt:
+                        type: string
+                        format: date-time
+                        example: "2024-10-26T00:00:00Z"
+                    type: object
+                type: object
+        422:
+          description: "Form validation Error"
+          content:
+            application/json:
+              schema:
+                properties:
+                  type: object
+                  message:
+                    type: string
+                    example: "id field is required."
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+        400:
+          description: "Validation error"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "The given data was invalid."
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /users/info:
+    get:
+      tags:
+        - User
+      summary: "Get user information"
+      description: "Retrieve the authenticated user's information."
+      operationId: getUserInfo
+      responses:
+        200:
+          description: "User information retrieved successfully"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                  - data
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User information retrieved successfully"
+                  data:
+                    $ref: "#/components/schemas/User"
+                type: object
+        422:
+          description: "Unprocessable entity - user not authenticated"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Failed to retrieve user information"
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /users/profile-picture:
+    post:
+      tags:
+        - User
+      summary: "Upload a profile picture"
+      description: "Upload a new profile picture for the authenticated user."
+      operationId: updateProfilePicture
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - profilePicture
+              properties:
+                profilePicture:
+                  type: string
+                  format: binary
+              type: object
+      responses:
+        200:
+          description: "Profile picture uploaded successfully"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                  - data
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User information updated successfully"
+                  data:
+                    $ref: "#/components/schemas/User"
+                type: object
+        422:
+          description: "Unprocessable entity - upload failed"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Failed to update user information"
+                type: object
+        415:
+          description: "Unsupported media type - invalid image format"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "The uploaded file must be an image of type: jpeg, png, jpg."
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /logout:
+    post:
+      tags:
+        - Authentication
+      summary: "Logout the authenticated user"
+      description: "Revoke the access token for the authenticated user."
+      operationId: logout
+      responses:
+        200:
+          description: "Logout successful"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Logout successful"
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /users/edit:
+    patch:
+      tags:
+        - User
+      summary: "Update user information"
+      description: "Update the authenticated user's first and last name."
+      operationId: updateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - firstName
+                - lastName
+              properties:
+                firstName:
+                  type: string
+                  example: John
+                lastName:
+                  type: string
+                  example: Doe
+              type: object
+      responses:
+        200:
+          description: "User information updated successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User information updated successfully"
+                  data:
+                    $ref: "#/components/schemas/User"
+                type: object
+        422:
+          description: "Unprocessable entity - update failed"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Failed to update user information"
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /books/search:
+    get:
+      tags:
+        - Books
+      summary: "Search for books by name"
+      operationId: bookSearch
+      parameters:
+        - name: name
+          in: query
+          description: "Name of the book to search"
+          required: true
+          schema:
+            type: string
+        - name: perPage
+          in: query
+          description: "Number of books per page for pagination"
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: "Current page for pagination"
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        200:
+          description: "Books found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Books found"
+                  data:
+                    $ref: "#/components/schemas/Book"
+                  links:
+                    properties:
+                      first:
+                        type: string
+                        example: "http://localhost/api/books/search?page=1"
+                      last:
+                        type: string
+                        example: "http://localhost/api/books/search?page=1"
+                      prev:
+                        type: string
+                        example: null
+                      next:
+                        type: string
+                        example: null
+                    type: object
+                  meta:
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      path:
+                        type: string
+                        example: "http://localhost/api/books/search"
+                      per_page:
+                        type: integer
+                        example: 10
+                      to:
+                        type: integer
+                        example: 1
+                      total:
+                        type: integer
+                        example: 1
+                    type: object
+                type: object
+        404:
+          description: "No books found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "No books found"
+                type: object
+  "/books/{book}/chapters":
+    get:
+      tags:
+        - Books
+      summary: "Retrieve all chapters of a book"
+      operationId: getBookChapters
+      parameters:
+        - name: book
+          in: path
+          description: "UUID of the book"
+          required: true
+          schema:
+            type: string
+        - name: perPage
+          in: query
+          description: "Number of chapters per page for pagination"
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: "Current page for pagination"
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        200:
+          description: "Chapters retrieved successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Chapters retrieved successfully"
+                  data:
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/BookChapterResource"
+                      links:
+                        $ref: "#/components/schemas/Links"
+                      meta:
+                        $ref: "#/components/schemas/Meta"
+                    type: object
+                type: object
+        404:
+          description: "No chapters found for this book"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "No chapters found for this book"
+                type: object
+  /books/chapter/page/{pageUUID}/persons:
+    get:
+      tags:
+        - Books
+      summary: "Retrieve persons from a specific chapter page"
+      description: "Fetches paginated persons associated with a given chapter page along with their portraits and features."
+      operationId: getPagePersons
+      parameters:
+        - name: pageUUID
+          in: path
+          description: "UUID of the chapter page"
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: "Page number for pagination"
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: perPage
+          in: query
+          description: "Number of persons per page"
+          required: false
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
+          description: "Page Persons retrieved successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Page Persons retrieved successfully"
+                  data:
+                    required:
+                      - data
+                      - links
+                      - meta
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/PagePersons"
+                      links:
+                        $ref: "#/components/schemas/Links"
+                      meta:
+                        $ref: "#/components/schemas/Meta"
+                    type: object
+                type: object
+        404:
+          description: "Page not found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Page not found"
+                type: object
+  /books/chapter/page/{pageUUID}/sights:
+    get:
+      tags:
+        - Books
+      summary: "Get page sights"
+      description: "Retrieve the sights of a specific page with pagination"
+      operationId: getPageSights
+      parameters:
+        - name: pageUUID
+          in: path
+          description: "UUID of the page"
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: "Page number for pagination"
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: perPage
+          in: query
+          description: "Number of items per page for pagination"
+          required: false
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
+          description: "Page sights retrieved successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Page Sights retrieved successfully"
+                  data:
+                    required:
+                      - data
+                      - links
+                      - meta
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/pageSights"
+                      links:
+                        $ref: "#/components/schemas/Links"
+                      meta:
+                        $ref: "#/components/schemas/Meta"
+                    type: object
+                type: object
+        404:
+          description: "Page not found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Page not found"
+                type: object
+  /books/{bookUUID}/pages:
+    get:
+      tags:
+        - Books
+      summary: "Get pages of a specific book"
+      description: "Retrieves a paginated list of pages for a given book."
+      operationId: getBooksPages
+      parameters:
+        - name: bookUUID
+          in: path
+          description: "UUID of the chapter"
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: "Page number to retrieve (default is 1)"
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: perPage
+          in: query
+          description: "Number of items per page (default is 20)"
+          required: false
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
+          description: "Book Pages retrieved successfully"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                  - data
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Book Pages retrieved successfully."
+                  data:
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ChapterPage"
+                      links:
+                        $ref: "#/components/schemas/Links"
+                      meta:
+                        $ref: "#/components/schemas/Meta"
+                    type: object
+                type: object
+        404:
+          description: "Chapter not found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  "false":
+                    type: boolean
+                  message:
+                    type: "Book not found."
+                type: object
+  /books/save-current-book-page:
+    post:
+      tags:
+        - Books
+      summary: "Save the current page for a user reading a book"
+      operationId: saveCurrentPage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - bookUuid
+                - pageUuid
+              properties:
+                bookUuid:
+                  description: "The UUID of the book"
+                  type: string
+                  format: uuid
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                pageUuid:
+                  description: "The UUID of the chapter page"
+                  type: string
+                  format: uuid
+                  example: 550e8400-e29b-41d4-a716-446655440001
+              type: object
+      responses:
+        200:
+          description: "Current page saved successfully."
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Current page saved successfully."
+                type: object
+        404:
+          description: "Book or Page not found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Book or Page not found"
+                type: object
+        422:
+          description: "Validation error"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "The book uuid field is required. (and 1 more error)"
+                  errors:
+                    properties:
+                      bookUuid:
+                        type: array
+                        items:
+                          type: string
+                          example: "The book uuid field is required."
+                      pageUuid:
+                        type: array
+                        items:
+                          type: string
+                          example: "The page uuid field is required."
+                    type: object
+                type: object
+      security:
+        - "Bearer Token": []
+  /books/{bookUUID}/pages/{pageNumber}:
+    get:
+      tags:
+        - Books
+      summary: "Get page details of a specific book"
+      description: "Retrieves page details for a given book."
+      operationId: getBooksPage
+      parameters:
+        - name: bookUUID
+          in: path
+          description: "UUID of the chapter"
+          required: true
+          schema:
+            type: string
+        - name: pageNumber
+          in: path
+          description: "Page number of a book page."
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: "Page retrieved successfully"
+          content:
+            application/json:
+              schema:
+                required:
+                  - success
+                  - message
+                  - data
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Page retrieved successfully."
+                  data:
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ChapterPage"
+                    type: object
+                type: object
+        404:
+          description: "page not found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  "false":
+                    type: boolean
+                  message:
+                    type: "Page not found."
+                type: object
+  /books/page/mark-text:
+    post:
+      tags:
+        - Books
+      summary: "Mark or Unmark Text on a Page"
+      description: "Allows a user to mark or unmark a specific text on a page. If the text is already marked, it will be unmarked. Otherwise, it will be marked."
+      operationId: markPageText
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - page_uuid
+                - text
+              properties:
+                pageUuid:
+                  description: "UUID of the page"
+                  type: string
+                  format: uuid
+                  example: e0136037-00e2-47f2-bd1b-d6c7e4277ebc
+                contentUuid:
+                  description: "UUID of the content"
+                  type: string
+                  format: uuid
+                  example: e0136037-00e2-47f2-bd1b-d6c7e4277ebc
+                text:
+                  description: "The exact text to mark or unmark"
+                  type: string
+                  example: "It was created by Taylor Otwell"
+              type: object
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Text marked successfully."
+                  data:
+                    type: object
+                    nullable: true
+                type: object
+        404:
+          description: "Page Not Found"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Page not found"
+                  data:
+                    type: object
+                    nullable: true
+                type: object
+        422:
+          description: "Validation error"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "The page uuid field is required. (and 1 more error)"
+                  errors:
+                    properties:
+                      pageUuid:
+                        type: array
+                        items:
+                          type: string
+                          example: "The page uuid field is required."
+                      text:
+                        type: array
+                        items:
+                          type: string
+                          example: "The text is required."
+                    type: object
+                type: object
+      security:
+        - "Bearer Token": []
+  /users/change-password:
+    post:
+      tags:
+        - User
+      summary: "Change user password"
+      operationId: changePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - password
+                - new_password
+                - new_password_confirmation
+              properties:
+                password:
+                  description: "Current password"
+                  type: string
+                new_password:
+                  description: "New password"
+                  type: string
+                new_password_confirmation:
+                  description: "New password confirmation"
+                  type: string
+              type: object
+      responses:
+        200:
+          description: "Password changed successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                type: object
+        400:
+          description: "Current password is incorrect"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+  /users/change-email:
+    post:
+      tags:
+        - User
+      summary: "Change user email"
+      operationId: changeEmail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - current_email
+                - new_email
+              properties:
+                current_email:
+                  description: "Current email"
+                  type: string
+                new_email:
+                  description: "New email"
+                  type: string
+              type: object
+      responses:
+        200:
+          description: "Email changed successfully"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                type: object
+        400:
+          description: "Current email is incorrect"
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /password/email:
+    post:
+      tags:
+        - Authentication
+      summary: "Send password reset link"
+      operationId: passwordResetLink
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+              type: object
+      responses:
+        200:
+          description: "Password reset link sent successfully."
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Password reset link sent."
+                type: object
+        400:
+          description: "Unable to send reset link."
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Unable to send reset link."
+                type: object
+        422:
+          description: "Validation error."
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "The email field is required."
+                  errors:
+                    properties:
+                      email:
+                        type: array
+                        items:
+                          type: string
+                          example: "The email field is required."
+                    type: object
+                type: object
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /password/reset:
+    post:
+      tags:
+        - Authentication
+      summary: "Reset password"
+      operationId: passwordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+                - passwordConfirmation
+                - token
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: newPassword123
+                passwordConfirmation:
+                  type: string
+                  format: password
+                  example: newPassword123
+                token:
+                  type: string
+                  example: 2992b7aa7536c670aa965e22269c76d195e2f8c7212df4cfb1c42a1c9fb6fb3
+              type: object
+      responses:
+        200:
+          description: "Your password has been reset."
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Your password has been reset."
+                type: object
+        404:
+          description: "This password reset token is invalid."
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "This password reset token is invalid."
+                type: object
+        422:
+          description: "Validation error."
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "The email field is required."
+                  errors:
+                    properties:
+                      email:
+                        type: array
+                        items:
+                          type: string
+                          example: "The email field is required."
+                      password:
+                        type: array
+                        items:
+                          type: string
+                          example: "The password must be at least 8 characters."
+                      passwordConfirmation:
+                        type: array
+                        items:
+                          type: string
+                          example: "The password confirmation field is required."
+                      token:
+                        type: array
+                        items:
+                          type: string
+                          example: "The token is invalid."
+                    type: object
+                type: object
+          500:
+            $ref: "#/components/responses/InternalServerError"
+      security:
+        - "Bearer Token": []
+components:
+  schemas:
+    Book:
+      properties:
+        data:
+          type: array
+          items:
+            properties:
+              uuid:
+                type: string
+                example: e80137c7-a6f5-4a6c-a382-438324f16740
+              name:
+                type: string
+                example: "Das Karussel der Seelen"
+              authorName:
+                type: string
+                example: "NXT YOU"
+              publishDate:
+                type: string
+                example: "2024"
+              language:
+                type: string
+                example: English
+              description:
+                type: string
+                example: "In der von einer mysteriösen Seuche heimgesuchten Stadt..."
+              thumbnail:
+                type: string
+                example: "http://localhost/storage/media/fb6180eb-4ecb-407c-823b-0772cdd1a783.jpg"
+              introVideo:
+                type: string
+                example: "http://localhost/storage/media/3125907-sd-426-240-25fps.mp4"
+              duration:
+                type: number
+                example: 1000
+              rating:
+                type: string
+                example: "3"
+              genre:
+                type: string
+                example: "Horror"
+              isBookmarked:
+                type: boolean
+                example: true
+              totalPages:
+                type: number
+                example: 10
+              currentPage:
+                type: number
+                example: 1
+              persons:
+                type: array
+                items:
+                  required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+                      example: Hair
+                  type: object
+            type: object
+        links:
+          $ref: "#/components/schemas/Links"
+        meta:
+          $ref: "#/components/schemas/Meta"
+      type: object
+    BookItem:
+      properties:
+        data:
+          properties:
+            uuid:
+              type: string
+              example: e80137c7-a6f5-4a6c-a382-438324f16740
+            name:
+              type: string
+              example: "Das Karussel der Seelen"
+            authorName:
+              type: string
+              example: "NXT YOU"
+            publishDate:
+              type: string
+              example: "2024"
+            language:
+              type: string
+              example: English
+            description:
+              type: string
+              example: "In der von einer mysteriösen Seuche heimgesuchten Stadt..."
+            thumbnail:
+              type: string
+              example: "http://localhost/storage/media/fb6180eb-4ecb-407c-823b-0772cdd1a783.jpg"
+            introVideo:
+              type: string
+              example: "http://localhost/storage/media/3125907-sd-426-240-25fps.mp4"
+            duration:
+              type: number
+              example: 1000
+            rating:
+              type: string
+              example: "3"
+            genre:
+              type: string
+              example: "Horror"
+            isBookmarked:
+              type: boolean
+              example: true
+            totalPages:
+              type: number
+              example: 10
+            currentPage:
+              type: number
+              example: 1
+            persons:
+              type: array
+              items:
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                    example: Hair
+    Links:
+      properties:
+        first:
+          type: string
+          example: "http://localhost/api/books/popular?page=1"
+        last:
+          type: string
+          example: "http://localhost/api/books/popular?page=1"
+        prev:
+          type: string
+          example: null
+          nullable: true
+        next:
+          type: string
+          example: null
+          nullable: true
+      type: object
+    Meta:
+      properties:
+        currentPage:
+          type: integer
+          example: 1
+        from:
+          type: integer
+          example: 1
+        lastPage:
+          type: integer
+          example: 1
+        links:
+          type: array
+          items:
+            properties:
+              url:
+                type: string
+                example: null
+                nullable: true
+              label:
+                type: string
+                example: "&laquo; Previous"
+              active:
+                type: boolean
+                example: false
+            type: object
+        path:
+          type: string
+          example: "http://localhost/api/books/popular"
+        perPage:
+          type: integer
+          example: 10
+        to:
+          type: integer
+          example: 1
+        total:
+          type: integer
+          example: 1
+      type: object
+    BookChapterResource:
+      required:
+        - name
+        - description
+        - listeningTime
+        - numberOfPages
+      properties:
+        name:
+          description: "Name of the chapter"
+          type: string
+        description:
+          description: "Description of the chapter"
+          type: string
+        listeningTime:
+          description: "Listening time of the chapter in minutes"
+          type: integer
+        numberOfPages:
+          description: "Number of pages in the chapter"
+          type: integer
+      type: object
+    User:
+      required:
+        - uuid
+        - firstName
+        - lastName
+        - email
+        - avatarUrl
+      properties:
+        uuid:
+          type: string
+          example: uuid-value
+        firstName:
+          type: string
+          example: John
+          nullable: true
+        lastName:
+          type: string
+          example: Doe
+          nullable: true
+        email:
+          type: string
+          format: email
+          example: user@example.com
+          nullable: true
+        avatarUrl:
+          type: string
+          example: "http://example.com/storage/avatar.jpg"
+          nullable: true
+      type: object
+    ChapterPage:
+      required:
+        - uuid
+        - number
+        - startTime
+        - endTime
+        - type
+        - content
+        - source
+      properties:
+        uuid:
+          type: string
+        number:
+          type: integer
+        startTime:
+          type: string
+        endTime:
+          type: string
+        content:
+          type: array
+          items:
+            required:
+              - uuid
+              - content
+            properties:
+              uuid:
+                type: string
+              content:
+                type: string
+            type: object
+          nullable: false
+      type: object
+    PagePersons:
+      required:
+        - firstName
+        - lastName
+        - nickName
+        - potrait
+        - shortBiography
+        - biography
+        - features
+      properties:
+        firstName:
+          type: string
+          example: Annie
+        lastName:
+          type: string
+          example: Robbins
+        nickName:
+          type: string
+          example: "Annie Carter"
+        potrait:
+          type: string
+          example: "http://127.0.0.1:8000/storage/media/3.jpg"
+        shortBiography:
+          type: string
+          example: "Short Biography"
+        biography:
+          type: string
+          example: "Long Biography"
+        features:
+          type: array
+          items:
+            required:
+              - name
+              - value
+            properties:
+              name:
+                type: string
+                example: Hair
+              value:
+                type: string
+                example: Black
+            type: object
+      type: object
+    pageSights:
+      required:
+        - name
+        - media
+        - mapWidth
+        - mapHeight
+        - PinX
+        - pinY
+        - map
+      properties:
+        name:
+          type: string
+          example: "Sight 1"
+        media:
+          type: string
+          example: "http://127.0.0.1:8000/storage/media/dummy-video-for-youtube-api-test.mp4"
+        mapWidth:
+          type: string
+          example: 100
+        mapHeight:
+          type: string
+          example: 100
+        pinX:
+          type: number
+          example: 698.00001907349
+        pinY:
+          type: number
+          example: 78.33332824707
+        map:
+          properties:
+            map:
+              type: string
+              example: "Harry Map 1"
+            image:
+              type: string
+              example: "http://127.0.0.1:8000/storage/media/map11.jpg"
+          type: object
+      type: object
+  responses:
+    Unauthenticated:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                example: Unauthenticated.
+            type: object
+    InternalServerError:
+      description: "Internal Server Error"
+      content:
+        application/json:
+          schema:
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                example: "Server Error."
+            type: object
+  securitySchemes:
+    BearerToken: # Removed space in the name
+      type: apiKey
+      description: "Enter token in format (Bearer 3|HIntmukVR39vvKYDKngOVO1xjFcAs2KXj7Pa8u2eb6a366fa)"
+      name: Authorization
+      in: header
+tags:
+  - name: Books
+    description: Books
+  - name: Authentication
+    description: Authentication
+  - name: User
+    description: User
